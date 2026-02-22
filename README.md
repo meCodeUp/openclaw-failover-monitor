@@ -63,9 +63,14 @@ Press `Ctrl+C` to stop the monitor.
 
 ## How it works
 
-The monitor reads OpenClaw's internal state files under `~/.openclaw/` to extract usage stats, error counts, cooldown timers, and the model failover configuration.
+The project consists of two files:
 
-It refreshes automatically at the configured interval. No data is modified — the monitor is strictly read-only.
+- **`openclaw-failover-monitor.sh`** — Bash-Wrapper: validates arguments, locates the OpenClaw config files, warns about insecure file permissions, and runs the monitor loop (`clear` → display → `sleep`).
+- **`monitor.py`** — Python backend: reads the JSON state files, calculates cooldown/disabled timers, and prints the formatted status output. Sanitizes all JSON-derived values to prevent terminal escape injection.
+
+The Bash script passes `AUTH_FILE` and `CONFIG_FILE` as environment variables to `monitor.py`. No data is modified — the monitor is strictly read-only.
+
+It refreshes automatically at the configured interval.
 
 **Note:** If you have multiple agents, the monitor uses the first agent directory found.
 
