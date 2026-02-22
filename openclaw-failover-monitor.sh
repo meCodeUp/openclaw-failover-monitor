@@ -45,6 +45,12 @@ if [[ ${#auth_files[@]} -eq 0 ]]; then
   exit 1
 fi
 AUTH_FILE="${auth_files[0]}"
+AGENT_DIR="$(dirname "$(dirname "$AUTH_FILE")")"
+AGENT_NAME="$(basename "$AGENT_DIR")"
+
+if [[ ${#auth_files[@]} -gt 1 ]]; then
+  echo "NOTE: Multiple agents found; monitoring '$AGENT_NAME'." >&2
+fi
 
 CONFIG_FILE=~/.openclaw/openclaw.json
 if [[ ! -f "$CONFIG_FILE" ]]; then
@@ -53,12 +59,20 @@ if [[ ! -f "$CONFIG_FILE" ]]; then
   exit 1
 fi
 
+# Warn if config files are world-writable (could be tampered with)
+for _f in "$AUTH_FILE" "$CONFIG_FILE"; do
+  _perms="$(stat -f '%Lp' "$_f" 2>/dev/null || stat -c '%a' "$_f" 2>/dev/null)" || continue
+  if [[ "${_perms: -1}" =~ [2367] ]]; then
+    echo "WARNING: $_f is world-writable" >&2
+  fi
+done
+
 # Clean exit on Ctrl+C
 trap 'printf "\n%s\n" "Monitor stopped."; exit 0' INT TERM
 
 while true; do
   clear
-  echo "=== openclaw-failover-monitor === $(date)"
+  echo "=== openclaw-failover-monitor === $(date)  [agent: $AGENT_NAME]"
   echo ""
 
   AUTH_FILE="$AUTH_FILE" CONFIG_FILE="$CONFIG_FILE" python3 -c "
