@@ -61,7 +61,7 @@ Press `Ctrl+C` to stop the monitor.
 
 ## How it works
 
-The monitor reads OpenClaw's internal state files under `~/.openclaw/` to extract usage stats, error counts, cooldown timers, and the model failover configuration. It does not read or display API keys or credentials.
+The monitor reads OpenClaw's internal state files under `~/.openclaw/` to extract usage stats, error counts, cooldown timers, and the model failover configuration.
 
 It refreshes automatically at the configured interval. No data is modified — the monitor is strictly read-only.
 
