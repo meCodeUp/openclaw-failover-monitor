@@ -61,14 +61,11 @@ Press `Ctrl+C` to stop the monitor.
 
 ## How it works
 
-The monitor reads two OpenClaw configuration files:
-
-- `~/.openclaw/agents/<agent>/agent/auth-profiles.json` — contains usage stats, error counts, and cooldown timers
-- `~/.openclaw/openclaw.json` — contains the model failover configuration (primary + fallbacks)
+The monitor reads OpenClaw's internal state files under `~/.openclaw/` to extract usage stats, error counts, cooldown timers, and the model failover configuration. It does not read or display API keys or credentials.
 
 It refreshes automatically at the configured interval. No data is modified — the monitor is strictly read-only.
 
-**Note:** If you have multiple agents, the monitor uses the first agent directory found in `~/.openclaw/agents/` (alphabetical order).
+**Note:** If you have multiple agents, the monitor uses the first agent directory found.
 
 ## Limitations
 
