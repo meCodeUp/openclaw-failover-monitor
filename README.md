@@ -4,6 +4,8 @@
 
 A terminal-based monitoring tool for [OpenClaw](https://openclaw.ai) that displays the real-time failover status of your configured AI model providers.
 
+![forest](screenshots/screenshot-failover-monitor.png)
+
 ## What it does
 
 OpenClaw supports automatic failover between AI model providers (e.g. Google, OpenAI, Anthropic). When a provider hits rate limits or errors, OpenClaw temporarily disables it and switches to a fallback.
