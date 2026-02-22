@@ -62,7 +62,14 @@ while true; do
   echo ""
 
   AUTH_FILE="$AUTH_FILE" CONFIG_FILE="$CONFIG_FILE" python3 -c "
-import os, sys, json, datetime
+import os, sys, json, datetime, re
+
+# Strip ANSI escape sequences and control characters to prevent terminal injection
+_ansi_re = re.compile(r'\x1b\[[0-9;]*[a-zA-Z]|\x1b[^[]|[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]')
+def sanitize(val):
+    if isinstance(val, str):
+        return _ansi_re.sub('', val)
+    return val
 
 auth_path = os.environ['AUTH_FILE']
 config_path = os.environ['CONFIG_FILE']
@@ -125,8 +132,8 @@ if not ordered_profiles:
 
 for profile, model, label in ordered_profiles:
     data = stats.get(profile, {})
-    print(f'  {profile}  [{label}]')
-    print(f'    model:      {model}')
+    print(f'  {sanitize(profile)}  [{sanitize(label)}]')
+    print(f'    model:      {sanitize(model)}')
 
     last_used = data.get('lastUsed')
     if last_used:
@@ -137,7 +144,7 @@ for profile, model, label in ordered_profiles:
 
     errors = data.get('errorCount', 0)
     failure_counts = data.get('failureCounts', {})
-    failure_str = f' {failure_counts}' if failure_counts else ''
+    failure_str = f' {sanitize(str(failure_counts))}' if failure_counts else ''
     print(f'    errors:     {errors}{failure_str}')
 
     cooldown = data.get('cooldownUntil')
