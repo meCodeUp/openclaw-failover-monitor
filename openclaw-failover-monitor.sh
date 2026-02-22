@@ -67,6 +67,13 @@ for _f in "$AUTH_FILE" "$CONFIG_FILE"; do
   fi
 done
 
+# Resolve script directory once (works even when called from another directory)
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+if [[ ! -f "$SCRIPT_DIR/monitor.py" ]]; then
+  echo "ERROR: monitor.py not found at $SCRIPT_DIR/monitor.py" >&2
+  exit 1
+fi
+
 # Clean exit on Ctrl+C
 trap 'printf "\n%s\n" "Monitor stopped."; exit 0' INT TERM
 
@@ -75,7 +82,6 @@ while true; do
   echo "=== openclaw-failover-monitor === $(date)  [agent: $AGENT_NAME]"
   echo ""
 
-  SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
   AUTH_FILE="$AUTH_FILE" CONFIG_FILE="$CONFIG_FILE" python3 "$SCRIPT_DIR/monitor.py" \
     || echo "  (error reading state files — retrying in ${INTERVAL}s)"
   sleep "$INTERVAL"
